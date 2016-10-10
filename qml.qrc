@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ParticleFlame.qml</file>
+        <file>blur-circle.png</file>
+        <file>blur-circle-reversed.png</file>
+        <file>ColorPicker.qml</file>
+        <file>ColorSample.qml</file>
+        <file>SizeChooser.qml</file>
+        <file>Button.qml</file>
+        <file>Drawer.qml</file>
+        <file>flat_arrow.svg</file>
+        <file>sizes.svg</file>
+        <file>colors.svg</file>
+        <file>camera.svg</file>
+        <file>trashbin.svg</file>
+        <file>tool.svg</file>
+        <file>quit.svg</file>
+        <file>GesturePicture.qml</file>
+        <file>hand.svg</file>
+    </qresource>
+</RCC>
