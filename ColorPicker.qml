@@ -13,16 +13,18 @@ Drawer {
 
     onColorUpdated: close()
 
-    property int colorPickerCols: 8
+    property int colorPickerCols: 12
 
     property var colors: ["#fce94f",
-            "#fcaf3e",
+            "#ee7308",
+            "#7a613c",
             "#73d216",
-            "#2e3436",
             "#3465a4",
-            "#ad7fa8",
+            "#6f3ac1",
+            "#e388f3",
             "#ef2929",
-            "#eeeeec"]
+            "#eeeeec",
+            "#2e3436"]
 
 
     property alias color: colorGrid.color

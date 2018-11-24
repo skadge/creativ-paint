@@ -94,6 +94,13 @@ Window {
                         cameraCapture.visible=true;
                     }
                 }
+
+                Button {
+                    icon: "eraser-solid.svg"
+                    onTapped: {
+                        tools.close();
+                    }
+                }
                 Button {
                     icon: "round-delete_forever-24px.svg"
 
@@ -119,7 +126,7 @@ Window {
         handle.right: penDrawerContainer.right
         handle.top: penDrawerContainer.bottom
         handlecolor: "#9c27b0"
-        icon: "sizes.svg"
+        icon: "round-create-24px.svg"
 
         property alias penWidth: sizeGrid.penWidth
 

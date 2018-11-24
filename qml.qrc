@@ -8,18 +8,16 @@
         <file>ColorSample.qml</file>
         <file>Button.qml</file>
         <file>Drawer.qml</file>
-        <file>flat_arrow.svg</file>
         <file>sizes.svg</file>
-        <file>colors.svg</file>
-        <file>camera.svg</file>
-        <file>trashbin.svg</file>
-        <file>tool.svg</file>
-        <file>quit.svg</file>
         <file>GesturePicture.qml</file>
-        <file>hand.svg</file>
         <file>round-color_lens-24px.svg</file>
         <file>round-delete_forever-24px.svg</file>
         <file>round-more_horiz-24px.svg</file>
         <file>round-photo_camera-24px.svg</file>
+        <file>round-create-24px.svg</file>
+        <file>round-share-24px.svg</file>
+        <file>eraser-solid.svg</file>
+        <file>DrawingArea.qml</file>
+        <file>TouchJoint.qml</file>
     </qresource>
 </RCC>
