@@ -58,11 +58,8 @@ Window {
     ColorPicker {
         id: colorpicker
         z:5
-
-        onColorUpdated: {
-            canvas.z=++drawing.highestZ;
-        }
     }
+
     Drawer {
         id: tools
 
@@ -95,12 +92,6 @@ Window {
                     }
                 }
 
-                Button {
-                    icon: "eraser-solid.svg"
-                    onTapped: {
-                        tools.close();
-                    }
-                }
                 Button {
                     icon: "round-delete_forever-24px.svg"
 
@@ -163,27 +154,27 @@ Window {
                 Button {
                     id: penlarge
                     sizefactor: 1.0
-                    color: colorpicker.color
+                    color: colorpicker.paintbrushColor
                     onTapped: sizeGrid.uniqueSelect(penlarge)
 
                 }
                 Button {
                     id: penmedium
                     sizefactor: 0.7
-                    color: colorpicker.color
+                    color: colorpicker.paintbrushColor
                     onTapped: sizeGrid.uniqueSelect(penmedium)
                 }
                 Button {
                     id: pensmall
                     sizefactor: 0.5
-                    color: colorpicker.color
+                    color: colorpicker.paintbrushColor
                     selected: true
                     onTapped: sizeGrid.uniqueSelect(pensmall)
                 }
                 Button {
                     id: penxsmall
                     sizefactor: 0.2
-                    color: colorpicker.color
+                    color: colorpicker.paintbrushColor
                     onTapped: sizeGrid.uniqueSelect(penxsmall)
                 }
             }
@@ -203,59 +194,35 @@ Window {
         property alias drawingColor: colorpicker.color
 
         property var strokes: []
-        property alias lineWidth: penWidthChooser.penWidth
 
         MultiPointTouchArea {
-                id:touchs
+                id: touchArea
                 anchors.fill: parent
-                minimumTouchPoints: 1
-                maximumTouchPoints: 5
+
                 touchPoints: [
-                        TouchPoint {
-                            id: touch1
-                            property var currentStroke: []
-                            onYChanged: drawing.addPoint(x, y, currentStroke)
-                            onPressedChanged: {
-                                if (!pressed) {
-                                    drawing.finishStroke(currentStroke);
-                                    currentStroke = [];
-                                }
-                            }
-
-                            property alias color: drawing.drawingColor
-                        },
-                        TouchPoint { id: touch2
-                                    property var currentStroke: []
-                                    onYChanged: drawing.addPoint(x, y, currentStroke)
-                                    onPressedChanged: {
-                                        if (!pressed) {
-                                            drawing.finishStroke(currentStroke);
-                                            currentStroke = [];
-                                        }
-                                    }
-
-                                    property alias color: drawing.drawingColor
-
-                        },
-                        TouchPoint { id: touch11
-                                    property var currentStroke: []
-                                    onYChanged: drawing.addPoint(x, y, currentStroke)
-                                    onPressedChanged: {
-                                        if (!pressed) {
-                                            drawing.finishStroke(currentStroke);
-                                            currentStroke = [];
-                                        }
-                                    }
-
-                                    property alias color: drawing.drawingColor
-
-                        }
+                    TouchJoint {id:touch1;name:"touch1"},
+                    TouchJoint {id:touch2;name:"touch2"},
+                    TouchJoint {id:touch3;name:"touch3"},
+                    TouchJoint {id:touch4;name:"touch4"},
+                    TouchJoint {id:touch5;name:"touch5"},
+                    TouchJoint {id:touch6;name:"touch6"}
                 ]
-                onGestureStarted: {
-                    canvas.z= ++drawing.highestZ;
-                }
+            }
 
+        DrawingArea {
+            id: drawingarea
+            height: parent.height
+            width: parent.width
+            anchors.left: parent.left
+            anchors.top: parent.top
+
+            lineWidth: penWidthChooser.penWidth
+            fgColor: colorpicker.paintbrushColor
+            //bgImage: "res/tutorial_bg.svg"
+
+            touchs: touchArea
         }
+
 
         ParticleFlame {
                 color: touch1.color
@@ -272,106 +239,11 @@ Window {
 
         }
         ParticleFlame {
-                color: touch11.color
-                emitterX: touch11.x
-                emitterY: touch11.y
-                emitting: touch11.pressed
+                color: touch3.color
+                emitterX: touch3.x
+                emitterY: touch3.y
+                emitting: touch3.pressed
         }
 
-        Canvas {
-                id: canvas
-                antialiasing: true
-                opacity: 1
-                property real alpha: 0.8
-
-                anchors.fill: parent
-
-                function clear() {
-
-                    var ctx = canvas.getContext('2d');
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    requestPaint();
-
-                }
-
-                onPaint: {
-                        //if (drawing.currentStroke.length === 0 && drawing.strokes.length === 0) return;
-                        //if (drawing.currentStroke.length === 0) return;
-
-                        var strokeIdx = 0;
-                        var i = 0;
-                        var ctx = canvas.getContext('2d');
-                        //ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                        ctx.globalAlpha = canvas.alpha;
-
-
-                        ctx.lineJoin = "round"
-                        ctx.lineCap="round";
-
-                        //var allStrokes = drawing.strokes;
-                        var allStrokes = [];
-                        for (var i = 0; i < touchs.touchPoints.length; i++) {
-
-                            if(touchs.touchPoints[i].currentStroke.length !== 0) {
-                                allStrokes.push({color: drawing.drawingColor.toString(),
-                                                 points: touchs.touchPoints[i].currentStroke,
-                                                 width: drawing.lineWidth
-                                                });
-                            }
-                        }
-
-                        for (strokeIdx = 0; strokeIdx < allStrokes.length; strokeIdx++) {
-                                var points = allStrokes[strokeIdx].points;
-                                var width = allStrokes[strokeIdx].width;
-
-                                ctx.lineWidth = width;
-
-                                ctx.beginPath();
-                                ctx.strokeStyle = allStrokes[strokeIdx].color;
-
-                                var p1 = points[0];
-                                var p2 = points[1];
-
-                                ctx.moveTo(p1.x, p1.y);
-
-                                for (i = 1; i < points.length; i++)
-                                {
-                                        // we pick the point between pi+1 & pi+2 as the
-                                        // end point and p1 as our control point
-                                        var midPoint = midPointBtw(p1, p2);
-                                        ctx.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
-                                        p1 = points[i];
-                                        p2 = points[i+1];
-
-                                }
-                                ctx.lineTo(p1.x, p1.y);
-                                ctx.stroke();
-                       }
-                }
-
-                function midPointBtw(p1, p2) {
-                  return {
-                    x: p1.x + (p2.x - p1.x) / 2,
-                    y: p1.y + (p2.y - p1.y) / 2
-                  };
-                }
-
-        }
-
-        function addPoint(x, y, stroke) {
-            stroke.push(Qt.point(x,y));
-            canvas.requestPaint();
-        }
-
-        function finishStroke(stroke) {
-            if (stroke.length == 0) return;
-
-            strokes.push({color: drawing.drawingColor.toString(),
-                          points: stroke,
-                          width: drawing.lineWidth
-                         });
-            stroke = [];
-        }
-    }
+}
 }

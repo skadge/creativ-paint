@@ -1,7 +1,5 @@
 import QtQuick 2.2
 
-import Ros 1.0
-
 Item {
 
     id: drawingarea
@@ -32,16 +30,6 @@ Item {
         function storeCurrentDrawing() {
             var ctx = canvas.getContext('2d');
             lastCanvasData = ctx.getImageData(0,0,width, height);
-        }
-
-        ImagePublisher {
-            id: drawingPublisher
-            target: parent
-            topic: "/sandtray/background/image"
-            latched: true
-            frame: "sandtray"
-            pixelscale: drawingarea.pixelscale
-
         }
 
         onPaint: {
@@ -123,7 +111,8 @@ Item {
                     ctx.globalCompositeOperation = prevCompositeMode;
                     lastCanvasData = ctx.getImageData(0,0,canvas.width, canvas.height);
                     gc(); // explicitely call the garbage collector, otherwise, memory leaks
-                    ctx.drawImage(bgCanvasData,0,0);
+
+                    //ctx.drawImage(bgCanvasData,0,0);
                     ctx.drawImage(lastCanvasData,0,0);
                 }
             }
@@ -135,17 +124,6 @@ Item {
                 x: p1.x + (p2.x - p1.x) / 2,
                 y: p1.y + (p2.y - p1.y) / 2
             };
-        }
-
-        // Component.onCompleted: loadImage(drawingarea.bgImage);
-
-
-        Timer {
-            interval: 3000; running: true; repeat: false
-            onTriggered: {
-                console.log("Initial publishing of the background");
-                drawingPublisher.publish();
-            }
         }
 
         onImageLoaded: {
@@ -167,14 +145,6 @@ Item {
         drawingPublisher.publish();
     }
 
-    RosSignal {
-        topic: "sandtray/signals/clear_drawing"
-
-        onTriggered: {
-            drawingarea.clearDrawing();
-        }
-    }
-
     function update() {
         canvas.requestPaint();
     }
@@ -194,7 +164,6 @@ Item {
     }
 
     function finishStroke(stroke) {
-        drawingPublisher.publish();
         canvas.storeCurrentDrawing();
         stroke = [];
     }

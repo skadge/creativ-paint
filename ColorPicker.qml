@@ -27,7 +27,7 @@ Drawer {
             "#2e3436"]
 
 
-    property alias color: colorGrid.color
+    property alias paintbrushColor: colorGrid.color
 
     Rectangle {
         id: drawerContainer
@@ -38,18 +38,30 @@ Drawer {
 
     Grid {
             id: colorGrid
+            layoutDirection: Qt.RightToLeft
 
             property color color: {
                     for (var i = 0; i < children.length; i++)
                             if(children[i].selected)
                                     return children[i].color;
 
-                    return "black";
+                    return "transparent";
             }
 
             columns: colorPickerCols
 
             Component.onCompleted: createColors();
+
+            Button {
+                icon: "eraser-solid.svg"
+                onTapped: {
+                    colorpicker.close();
+                    selected=true;
+                    for (var i = 0; i < colorGrid.children.length; i++) {
+                            colorGrid.children[i].selected = false;
+                    }
+                }
+            }
 
 
             function uniqueSelect(sampler) {
@@ -68,6 +80,7 @@ Drawer {
                             sampler = component.createObject(colorGrid, {"color": colors[i]});
 
                             sampler.tapped.connect(uniqueSelect);
+                            uniqueSelect(sampler);
                     }
 
 
