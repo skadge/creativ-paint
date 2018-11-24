@@ -37,6 +37,7 @@ Window {
             function createPicture(picture) {
                var component = Qt.createComponent("GesturePicture.qml");
                var pic = component.createObject(drawing, {"source": picture, "width": Screen.width / 3, "z": ++drawing.highestZ});
+                drawing.pictures.push(pic);
             }
 }
 
@@ -57,41 +58,54 @@ Window {
     ColorPicker {
         id: colorpicker
         z:5
+
+        onColorUpdated: {
+            canvas.z=++drawing.highestZ;
+        }
     }
     Drawer {
         id: tools
 
         anchors.left: parent.left
         topDrawer: false
-        icon: "tool.svg"
+        icon: "round-more_horiz-24px.svg"
 
-        handle.bottom: toolsGrid.top
-        handle.left: toolsGrid.left
+        handle.bottom: toolsDrawerContainer.top
+        handle.left: toolsDrawerContainer.left
+        handlecolor: "#ffc107"
 
         z: 5
 
-        Grid {
-            id: toolsGrid
+        Rectangle {
+            id: toolsDrawerContainer
+            color: "#ffecb3"
 
-            Button {
-                icon: "camera.svg"
-                onTapped: {
-                    camera.start();
-                    cameraCapture.visible=true;
+            height: childrenRect.height
+            width: Screen.width
+
+            Grid {
+                id: toolsGrid
+
+                Button {
+                    icon: "round-photo_camera-24px.svg"
+                    onTapped: {
+                        tools.close();
+                        camera.start();
+                        cameraCapture.visible=true;
+                    }
                 }
-            }
-            Button {
-                icon: "trashbin.svg"
+                Button {
+                    icon: "round-delete_forever-24px.svg"
 
-                onTapped: {
-                    backgroundPicture.source="";
-                    canvas.clear()
+                    onTapped: {
+                        tools.close();
+                        canvas.clear()
+                        for(var i = 0; i < drawing.pictures.length; i++) {
+                            var pic = drawing.pictures.pop();
+                            pic.destroy();
+                        }
+                    }
                 }
-            }
-            Button {
-                icon: "quit.svg"
-
-                onTapped: Qt.quit()
             }
         }
     }
@@ -102,47 +116,70 @@ Window {
         anchors.right: parent.right
         z: 5
 
-        handle.right: sizeGrid.right
-        handle.top: sizeGrid.bottom
+        handle.right: penDrawerContainer.right
+        handle.top: penDrawerContainer.bottom
+        handlecolor: "#9c27b0"
         icon: "sizes.svg"
 
         property alias penWidth: sizeGrid.penWidth
-        Grid {
-            id: sizeGrid
-            columns: 3
 
-        property real penWidth: {
-            for (var i = 0; i < children.length; i++) {
-            if(children[i].selected)
-                return children[i].penWidth;
-            }
-            return 10;
-        }
-        function uniqueSelect(pen) {
-            penlarge.selected = false;
-            penmedium.selected = false;
-            pensmall.selected = false;
-            pen.selected = true;
-        }
+        Rectangle {
+            id: penDrawerContainer
+            color: "#e1bee7"
+
+            height: childrenRect.height
+            width: Screen.width
+
+            Grid {
+                anchors.right: parent.right
+                id: sizeGrid
+                columns: 8
+                layoutDirection: Qt.RightToLeft
+
+                property real penWidth: {
+                    for (var i = 0; i < children.length; i++) {
+                        if(children[i].selected)
+                            return children[i].sizefactor * 75;
+                    }
+                    return 10;
+                }
+                function uniqueSelect(pen) {
+                    penWidthChooser.close();
+                    penlarge.selected = false;
+                    penmedium.selected = false;
+                    pensmall.selected = false;
+                    penxsmall.selected = false;
+                    pen.selected = true;
+                }
 
 
-                SizeChooser {
+                Button {
                     id: penlarge
-                    penWidth: 75
+                    sizefactor: 1.0
+                    color: colorpicker.color
                     onTapped: sizeGrid.uniqueSelect(penlarge)
 
                 }
-                SizeChooser {
+                Button {
                     id: penmedium
-                    penWidth: 50
+                    sizefactor: 0.7
+                    color: colorpicker.color
                     onTapped: sizeGrid.uniqueSelect(penmedium)
                 }
-                SizeChooser {
+                Button {
                     id: pensmall
-                    penWidth: 25
+                    sizefactor: 0.5
+                    color: colorpicker.color
                     selected: true
                     onTapped: sizeGrid.uniqueSelect(pensmall)
                 }
+                Button {
+                    id: penxsmall
+                    sizefactor: 0.2
+                    color: colorpicker.color
+                    onTapped: sizeGrid.uniqueSelect(penxsmall)
+                }
+            }
         }
     }
 
@@ -151,6 +188,9 @@ Window {
         anchors.fill: parent
 
         color: Qt.rgba(0,0,0,0)
+
+        property var pictures: []
+        property var selectedPicture
 
         property int highestZ: 1
         property alias drawingColor: colorpicker.color

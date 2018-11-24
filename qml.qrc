@@ -6,7 +6,6 @@
         <file>blur-circle-reversed.png</file>
         <file>ColorPicker.qml</file>
         <file>ColorSample.qml</file>
-        <file>SizeChooser.qml</file>
         <file>Button.qml</file>
         <file>Drawer.qml</file>
         <file>flat_arrow.svg</file>
@@ -18,5 +17,9 @@
         <file>quit.svg</file>
         <file>GesturePicture.qml</file>
         <file>hand.svg</file>
+        <file>round-color_lens-24px.svg</file>
+        <file>round-delete_forever-24px.svg</file>
+        <file>round-more_horiz-24px.svg</file>
+        <file>round-photo_camera-24px.svg</file>
     </qresource>
 </RCC>

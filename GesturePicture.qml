@@ -4,29 +4,25 @@ import QtGraphicalEffects 1.0
 Image {
         id: picture
 
-
-        z:1
         fillMode: Image.PreserveAspectFit
 
         Behavior on scale { PropertyAnimation{}}
 
-//        Rectangle {
-            Image {
+        Image {
             source: "hand.svg"
             width:100
             height: width
-            //radius: width/2
             anchors.left: parent.left
             anchors.leftMargin: -width/2
             anchors.top: parent.top
             anchors.topMargin: -width/2
-            //color:"grey"
-            //border.color:Qt.darker(color)
-            //border.width:20
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: picture.z = ++picture.parent.highestZ
+                onClicked: {
+                        picture.z = ++picture.parent.highestZ;
+                        picture.parent.selectedPicture=picture;
+                }
             }
         }
 
@@ -42,7 +38,8 @@ Image {
                 enabled: picture.z >= picture.parent.highestZ
 
                 onPinchStarted: {
-                        picture.z = ++picture.parent.highestZ + 1;
+                        picture.z = ++picture.parent.highestZ;
+                        picture.parent.selectedPicture=picture;
                         picture.scale *= 1.1;
                 }
 
@@ -54,7 +51,8 @@ Image {
                         drag.target: picture
                         scrollGestureEnabled: false  // 2-finger-flick gesture should pass through to the Flickable
                         onPressed: {
-                                picture.z = ++picture.parent.highestZ + 1;
+                                picture.z = ++picture.parent.highestZ;
+                                picture.parent.selectedPicture=picture;
                                 picture.scale *= 1.1;
 
                         }

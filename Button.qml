@@ -1,36 +1,66 @@
 import QtQuick 2.0
 import QtQuick.Window 2.2
+import QtGraphicalEffects 1.0
 
-Rectangle {
+Item {
 
     id: myself
+    property alias icon: icon.source
+    property alias color: button.color
+    property alias border: button.border
+
+    property bool shadow: false
+    property bool selected: false
+    property double sizefactor : 1.0
+
+    signal tapped(var myself)
 
     width: Screen.width/12
     height: width
 
-    property bool selected: false
-    property alias icon: icon.source
+    Rectangle {
 
-    z: selected ? 11 : 10
-    signal tapped(var myself)
+        id: button
 
-    border.width: selected ? 10 : 0
-    border.color: Qt.darker(color)
+        width: parent.width * 0.8 * sizefactor
+        height: width
+        anchors.centerIn: parent
+        radius: width/2
 
-    color: "grey"
 
+        z: selected ? 11 : 10
+
+        border.width: selected ? 10 : 0
+        border.color: selected ? Qt.darker(color) : 'white'
+
+        color: "grey"
+
+
+        Image {
+            id: icon
+            width: parent.width * 0.75
+            height: width
+            sourceSize.height: height // workaround for Qt not rendering the SVG at the correct resolution
+            sourceSize.width: width
+            fillMode: Image.PreserveAspectFit
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+        }
+    }
 
     MouseArea {
         anchors.fill: parent
         onClicked: tapped(myself)
     }
-    Image {
-        id: icon
-        width: parent.width * 0.75
-        height: width
-        fillMode: Image.PreserveAspectFit
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+
+    DropShadow {
+        cached: true
+        anchors.fill: button
+        radius: 20.0
+        spread: 0.
+        samples: 21
+        color: shadow ? "#80000000":'transparent'
+        source: button
     }
 
 }

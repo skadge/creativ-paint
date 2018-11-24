@@ -1,14 +1,19 @@
 import QtQuick 2.0
+import QtQuick.Window 2.2
 
 Drawer {
     id: colorpicker
 
     handle.left: left
-    handle.top: colorGrid.bottom
+    handle.top: drawerContainer.bottom
 
-    icon: "colors.svg"
+    icon: "round-color_lens-24px.svg"
 
-    property int colorPickerCols: 4
+    signal colorUpdated
+
+    onColorUpdated: close()
+
+    property int colorPickerCols: 8
 
     property var colors: ["#fce94f",
             "#fcaf3e",
@@ -21,6 +26,13 @@ Drawer {
 
 
     property alias color: colorGrid.color
+
+    Rectangle {
+        id: drawerContainer
+        color: "#b2dfdb"
+
+        height: childrenRect.height
+        width: Screen.width
 
     Grid {
             id: colorGrid
@@ -43,6 +55,7 @@ Drawer {
                             children[i].selected = false;
                     }
                     sampler.selected=true;
+                    parent.parent.colorUpdated();
             }
 
             function createColors() {
@@ -57,6 +70,7 @@ Drawer {
 
 
             }
+    }
     }
 
 }
