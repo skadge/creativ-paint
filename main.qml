@@ -181,6 +181,22 @@ Window {
         }
     }
 
+    Button {
+        icon: "round-share-24px"
+        color: "#03a9f4"
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        shadow: true
+
+        z: 5
+
+        onTapped: {
+            drawingarea.save();
+        }
+
+
+    }
+
     Rectangle {
         id: drawing
         anchors.fill: parent

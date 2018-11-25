@@ -1,4 +1,6 @@
 import QtQuick 2.2
+import Qt.labs.platform 1.0
+import org.skadge.imageio 1.0
 
 Item {
 
@@ -166,5 +168,17 @@ Item {
     function finishStroke(stroke) {
         canvas.storeCurrentDrawing();
         stroke = [];
+    }
+
+    function save() {
+        var path = StandardPaths.writableLocation(StandardPaths.PicturesLocation) + "/creativpainter.autosave.png";
+        var shortpath = path.slice(7); // remove 'file://'
+        console.info("Saving to " + shortpath);
+        canvas.save(shortpath);
+        imageio.shareImage(path);
+    }
+
+    ImageIO {
+        id: imageio
     }
 }

@@ -1,16 +1,25 @@
 TEMPLATE = app
 
-QT += qml quick widgets svg xml gui core
+linux:!android {
+    message("* Using settings for Linux.")
+    QT += qml quick widgets
+}
+
+android {
+    message("* Using settings for Android.")
+    QT += qml quick widgets svg xml gui core androidextras
+}
+
 CONFIG += c++11
 
-# ANDROID_PACKAGE_SOURCE_DIR = "templates"
-
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    imageio.cpp
 
 RESOURCES += qml.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
+#QML_IMPORT_PATH = /home/skadge/applis/Qt/5.11.2/gcc_64/qml
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -43,3 +52,6 @@ DISTFILES += \
     android/gradlew.bat
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+HEADERS += \
+    imageio.h
