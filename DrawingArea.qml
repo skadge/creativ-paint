@@ -59,18 +59,18 @@ Item {
             var currentStrokes = [];
             for (var i = 0; i < touchs.touchPoints.length; i++) {
 
-                if(touchs.touchPoints[i].currentStroke.length !== 0) {
-                    if (fillbucket) {
-                        var p =touchs.touchPoints[i].currentStroke.pop();
-                        floodfill(Math.round(p.x) * 2, Math.round(p.y) * 2);
+                if (fillbucket) {
+                    var x =touchs.touchPoints[i].startX;
+                    var y =touchs.touchPoints[i].startY;
+                    floodfill(Math.round(x) * 2, Math.round(y) * 2);
 
-                    }
-                    else {
-
+                }
+                else {
+                    if(touchs.touchPoints[i].currentStroke.length !== 0) {
                         currentStrokes.push({color: touchs.touchPoints[i].color.toString(),
-                                points: touchs.touchPoints[i].currentStroke,
-                                width: drawingarea.lineWidth
-                            });
+                                                points: touchs.touchPoints[i].currentStroke,
+                                                width: drawingarea.lineWidth
+                                            });
                     }
                 }
             }
@@ -150,7 +150,6 @@ Item {
 
         function floodfill(x,y) {
 
-            drawingarea.fillbucket = false; // automatically return to 'pencil' mode
 
             var r = Math.round(drawingarea.fgColor.r * 255);
             var g = Math.round(drawingarea.fgColor.g * 255);
@@ -167,6 +166,7 @@ Item {
             var target_color = [tr,tg,tb,ta];
 
             floodfill_inner(lastCanvasData, x, y, target_color, color);
+            drawingarea.fillbucket = false; // automatically return to 'pencil' mode
 
             var ctx = canvas.getContext('2d');
             ctx.drawImage(lastCanvasData,0,0);
