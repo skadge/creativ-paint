@@ -178,61 +178,85 @@ Item {
         }
 
 
-        function sameColor(canvasData, x, y, color) {
-            var idx = (y * canvasData.width + x) * 4;
+        function sameColor(canvasData, idx, color) {
             return    canvasData.data[idx] === color[0]
-                   && canvasData.data[idx + 1] === color[1]
-                   && canvasData.data[idx + 2] === color[2]
-                   && canvasData.data[idx + 3] === color[3];
+                    && canvasData.data[idx + 1] === color[1]
+                    && canvasData.data[idx + 2] === color[2]
+                    && canvasData.data[idx + 3] === color[3];
         }
 
-        function setColor(canvasData, x, y, color) {
+        function setColor(canvasData, idx, color) {
 
-             canvasData.data[(y * canvasData.width + x) * 4] = color[0];
-             canvasData.data[(y * canvasData.width + x) * 4 + 1] = color[1];
-             canvasData.data[(y * canvasData.width + x) * 4 + 2] = color[2];
-             canvasData.data[(y * canvasData.width + x) * 4 + 3] = color[3];
+            canvasData.data[idx] = color[0];
+            canvasData.data[idx + 1] = color[1];
+            canvasData.data[idx + 2] = color[2];
+            canvasData.data[idx + 3] = color[3];
         }
 
 
 
         /* Algo based on https://en.wikipedia.org/wiki/Flood_fill
         */
-        function floodfill_inner(canvasData, x, y, target_color, replace_color) {
-            if (x < 0 || y < 0 || x >= lastCanvasData.width || y >= lastCanvasData.height) return;
-            if (sameColor(canvasData, x, y, replace_color)) return;
-            if (!sameColor(canvasData, x, y, target_color)) return;
+        function floodfill_inner(canvasData, sx, sy, target_color, replace_color) {
 
-            var Q = [];
+            if (sameColor(canvasData, (sy * canvasData.width + sx) * 4, replace_color)) return;
 
-            setColor(canvasData, x, y, replace_color);
+            var pixel_stack = [[sx, sy]];
 
-            Q.push([x,y]);
+            while(pixel_stack.length)
+            {
+                var new_pos, x, y, pixel_pos, reach_left, reach_right;
+                new_pos = pixel_stack.pop();
+                x = new_pos[0]; y = new_pos[1];
 
-            while(Q.length) {
-                var p = Q.pop();
-                x = p[0]; y = p[1];
+                pixel_pos = (y * canvasData.width + x) * 4;
 
-                if ( x < lastCanvasData.width - 1 && sameColor(canvasData, x+1, y, target_color)) {
-                    setColor(canvasData, x+1, y, replace_color);
-                    Q.push([x+1, y]);
-                }
-                if (x > 0 && sameColor(canvasData, x-1, y, target_color)) {
-                    setColor(canvasData, x-1, y, replace_color);
-                    Q.push([x-1, y]);
-                }
-                if (y < lastCanvasData.height - 1 && sameColor(canvasData, x, y+1, target_color)) {
-                    setColor(canvasData, x, y+1, replace_color);
-                    Q.push([x, y+1]);
-                }
-                if (y > 0 && sameColor(canvasData, x, y-1, target_color)) {
-                    setColor(canvasData, x, y-1, replace_color);
-                    Q.push([x, y-1]);
+                while(y-- >= 0 && sameColor(canvasData, pixel_pos, target_color)) {
+                    pixel_pos -= canvasData.width * 4;
                 }
 
+                pixel_pos += canvasData.width * 4;
+                ++y;
+
+                reach_left = false;
+                reach_right = false;
+
+                while(y++ < canvasData.height-1 && sameColor(canvasData, pixel_pos, target_color)) {
+
+                    setColor(canvasData, pixel_pos, replace_color);
+
+                    if(x > 0) {
+
+                        if(sameColor(canvasData, pixel_pos - 4, target_color)) {
+
+                            if(!reach_left) {
+                                pixel_stack.push([x - 1, y]);
+                                reach_left = true;
+                            }
+                        }
+                        else if(reach_left) {
+                            reach_left = false;
+                        }
+                    }
+
+                    if(x < canvasData.width-1) {
+
+                        if(sameColor(canvasData, pixel_pos + 4, target_color)) {
+                            if(!reach_right) {
+                                pixel_stack.push([x + 1, y]);
+                                reach_right = true;
+                            }
+                        }
+                        else if(reach_right) {
+                            reach_right = false;
+                        }
+                    }
+
+                    pixel_pos += canvasData.width * 4;
+                }
             }
-        }
 
+        }
     }
 
     function clearDrawing() {
