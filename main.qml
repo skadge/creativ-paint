@@ -27,16 +27,18 @@ Window {
 
             cameraState: Camera.LoadedState
 
+
             imageCapture {
                 onImageCaptured: {
-                    createPicture(preview);
+                    //createPicture(preview);
+                    drawingarea.bgImage = preview;
                     cameraCapture.visible=false;
                     camera.stop();
                 }
             }
             function createPicture(picture) {
                var component = Qt.createComponent("GesturePicture.qml");
-               var pic = component.createObject(drawing, {"source": picture, "width": Screen.width / 3, "z": ++drawing.highestZ});
+               var pic = component.createObject(drawing, {"source": picture, "width": Screen.width / 3, "z": 1});
                 drawing.pictures.push(pic);
             }
 }
@@ -117,7 +119,7 @@ Window {
         handle.right: penDrawerContainer.right
         handle.top: penDrawerContainer.bottom
         handlecolor: "#9c27b0"
-        icon: "round-create-24px.svg"
+        icon: drawingarea.fillbucket ? "round-format_color_fill-24px.svg" : "round-create-24px.svg"
 
         property alias penWidth: sizeGrid.penWidth
 
@@ -181,6 +183,18 @@ Window {
                     sizefactor: 0.2
                     color: colorpicker.paintbrushColor
                     onTapped: sizeGrid.uniqueSelect(penxsmall)
+                }
+
+                Button {
+                    id: fillbucket
+                    color: "#9c27b0"
+                    icon: "round-format_color_fill-24px.svg"
+                    selected: drawingarea.fillbucket
+                    onTapped: {
+                        penWidthChooser.close();
+                        drawingarea.fillbucket=true;
+                    }
+
                 }
             }
         }
