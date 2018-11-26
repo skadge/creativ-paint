@@ -60,10 +60,19 @@ Window {
     ColorPicker {
         id: colorpicker
         z:5
+
+        onIsopenChanged: {
+            if (isopen) closeOtherDrawers(colorpicker);
+        }
     }
 
     Drawer {
         id: tools
+
+        onIsopenChanged: {
+            if (isopen) closeOtherDrawers(tools);
+        }
+
 
         anchors.left: parent.left
         topDrawer: false
@@ -115,6 +124,10 @@ Window {
 
         anchors.right: parent.right
         z: 5
+
+        onIsopenChanged: {
+            if (isopen) closeOtherDrawers(penWidthChooser);
+        }
 
         handle.right: penDrawerContainer.right
         handle.top: penDrawerContainer.bottom
@@ -187,7 +200,7 @@ Window {
 
                 Button {
                     id: fillbucket
-                    color: "#9c27b0"
+                    color: colorpicker.paintbrushColor
                     icon: "round-format_color_fill-24px.svg"
                     selected: drawingarea.fillbucket
                     onTapped: {
@@ -200,6 +213,15 @@ Window {
         }
     }
 
+    function closeOtherDrawers(drawer) {
+        if ( drawer !== penWidthChooser) penWidthChooser.close();
+        if ( drawer !== tools) tools.close();
+        if ( drawer !== colorpicker) colorpicker.close();
+    }
+    function closeAllDrawers() {
+        closeOtherDrawers(undefined);
+    }
+
     Button {
         icon: "round-share-24px"
         color: "#03a9f4"
@@ -210,6 +232,7 @@ Window {
         z: 5
 
         onTapped: {
+            closeAllDrawers();
             drawingarea.save();
         }
 
@@ -233,6 +256,10 @@ Window {
         MultiPointTouchArea {
                 id: touchArea
                 anchors.fill: parent
+
+                onPressed: {
+                    closeAllDrawers()
+                }
 
                 touchPoints: [
                     TouchJoint {id:touch1;name:"touch1"},
