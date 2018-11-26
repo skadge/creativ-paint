@@ -137,16 +137,21 @@ Window {
                 property real penWidth: {
                     for (var i = 0; i < children.length; i++) {
                         if(children[i].selected)
-                            return children[i].sizefactor * 75;
+                            return children[i].sizefactor * Screen.width/12;
                     }
                     return 10;
                 }
-                function uniqueSelect(pen) {
-                    penWidthChooser.close();
+                function deselectAll() {
                     penlarge.selected = false;
                     penmedium.selected = false;
                     pensmall.selected = false;
                     penxsmall.selected = false;
+                }
+
+                function uniqueSelect(pen) {
+                    deselectAll();
+                    drawingarea.fillbucket=false;
+                    penWidthChooser.close();
                     pen.selected = true;
                 }
 
