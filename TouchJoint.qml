@@ -6,7 +6,6 @@ TouchPoint {
     id: touch
 
     property string name: "touch"
-    property bool movingItem: false
     property bool drawing: false
 
     // when used to draw on the background:
@@ -15,18 +14,10 @@ TouchPoint {
 
     onXChanged: {
 
-        if(movingItem) {
-            joint.target = Qt.point(x, y);
-        }
-
         // (only add stroke point in one dimension (Y) to avoid double drawing)
     }
 
     onYChanged: {
-        if(movingItem) {
-            joint.target = Qt.point(x, y);
-        }
-
         if (drawing) {
             currentStroke.push(Qt.point(x,y));
             drawingarea.update();
