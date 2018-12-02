@@ -1,6 +1,8 @@
-import QtQuick 2.2
+import QtQuick 2.11
 import Qt.labs.platform 1.0
 import org.skadge.imageio 1.0
+
+import ImageProcessing 1.0
 
 Item {
 
@@ -9,6 +11,12 @@ Item {
     property double pixelscale: 1.0 // how many meters does 1 pixel represent?
 
     property bool fillbucket: false // if true, a click fills the underlying pixels
+
+    onFillbucketChanged: {
+        if(fillbucket) {
+            floodfill.data = canvas.toDataURL("image/png");
+        }
+    }
 
     property string bgImage
     property int lineWidth: 50
@@ -29,11 +37,14 @@ Item {
         property var lastCanvasData
         property var bgCanvasData
 
+        renderStrategy: Canvas.Threaded
+
         anchors.fill: parent
 
         function storeCurrentDrawing() {
             var ctx = canvas.getContext('2d');
             lastCanvasData = ctx.getImageData(0,0,width, height);
+
         }
 
         onPaint: {
@@ -53,6 +64,8 @@ Item {
             if (bgCanvasData) ctx.drawImage(bgCanvasData,0,0);
             if (lastCanvasData) ctx.drawImage(lastCanvasData,0,0);
 
+            ctx.drawImage(filledImage,0,0);
+
             ctx.lineJoin = "round"
             ctx.lineCap="round";
 
@@ -62,7 +75,7 @@ Item {
                 if (fillbucket) {
                     var x =touchs.touchPoints[i].startX;
                     var y =touchs.touchPoints[i].startY;
-                    floodfill(Math.round(x) * 2, Math.round(y) * 2);
+                    floodfill.fill(Math.round(x) * 2, Math.round(y) * 2, fgColor);
 
                 }
                 else {
@@ -147,116 +160,18 @@ Item {
             requestPaint();
         }
 
+        FloodFill {
+            id: floodfill
 
-        function floodfill(x,y) {
-
-
-            var r = Math.round(drawingarea.fgColor.r * 255);
-            var g = Math.round(drawingarea.fgColor.g * 255);
-            var b = Math.round(drawingarea.fgColor.b * 255);
-            var a = Math.round(drawingarea.fgColor.a * 255);
-            var color = [r,g,b,a];
-
-            if (lastCanvasData === undefined) storeCurrentDrawing();
-
-            var tr = lastCanvasData.data[(y * lastCanvasData.width + x) * 4];
-            var tg = lastCanvasData.data[(y * lastCanvasData.width + x) * 4 + 1];
-            var tb = lastCanvasData.data[(y * lastCanvasData.width + x) * 4 + 2];
-            var ta = lastCanvasData.data[(y * lastCanvasData.width + x) * 4 + 3];
-            var target_color = [tr,tg,tb,ta];
-
-            floodfill_inner(lastCanvasData, x, y, target_color, color);
-            drawingarea.fillbucket = false; // automatically return to 'pencil' mode
-
-            var ctx = canvas.getContext('2d');
-            ctx.drawImage(lastCanvasData,0,0);
-
-            //ctx.fillRect(x/2-10, y/2-10,20,20);
-
-            requestPaint();
-
+        }
+        Image {
+            visible: false
+            id: filledImage
+            anchors.fill:parent
+            source: floodfill.filledImage
         }
 
 
-        function sameColor(canvasData, idx, color) {
-            return    canvasData.data[idx] === color[0]
-                    && canvasData.data[idx + 1] === color[1]
-                    && canvasData.data[idx + 2] === color[2]
-                    && canvasData.data[idx + 3] === color[3];
-        }
-
-        function setColor(canvasData, idx, color) {
-
-            canvasData.data[idx] = color[0];
-            canvasData.data[idx + 1] = color[1];
-            canvasData.data[idx + 2] = color[2];
-            canvasData.data[idx + 3] = color[3];
-        }
-
-
-
-        /* Algo based on https://en.wikipedia.org/wiki/Flood_fill
-        */
-        function floodfill_inner(canvasData, sx, sy, target_color, replace_color) {
-
-            if (sameColor(canvasData, (sy * canvasData.width + sx) * 4, replace_color)) return;
-
-            var pixel_stack = [[sx, sy]];
-
-            while(pixel_stack.length)
-            {
-                var new_pos, x, y, pixel_pos, reach_left, reach_right;
-                new_pos = pixel_stack.pop();
-                x = new_pos[0]; y = new_pos[1];
-
-                pixel_pos = (y * canvasData.width + x) * 4;
-
-                while(y-- >= 0 && sameColor(canvasData, pixel_pos, target_color)) {
-                    pixel_pos -= canvasData.width * 4;
-                }
-
-                pixel_pos += canvasData.width * 4;
-                ++y;
-
-                reach_left = false;
-                reach_right = false;
-
-                while(y++ < canvasData.height-1 && sameColor(canvasData, pixel_pos, target_color)) {
-
-                    setColor(canvasData, pixel_pos, replace_color);
-
-                    if(x > 0) {
-
-                        if(sameColor(canvasData, pixel_pos - 4, target_color)) {
-
-                            if(!reach_left) {
-                                pixel_stack.push([x - 1, y]);
-                                reach_left = true;
-                            }
-                        }
-                        else if(reach_left) {
-                            reach_left = false;
-                        }
-                    }
-
-                    if(x < canvasData.width-1) {
-
-                        if(sameColor(canvasData, pixel_pos + 4, target_color)) {
-                            if(!reach_right) {
-                                pixel_stack.push([x + 1, y]);
-                                reach_right = true;
-                            }
-                        }
-                        else if(reach_right) {
-                            reach_right = false;
-                        }
-                    }
-
-                    pixel_pos += canvasData.width * 4;
-                }
-            }
-
-        }
     }
 
     function clearDrawing() {

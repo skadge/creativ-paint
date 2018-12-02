@@ -13,7 +13,8 @@ android {
 CONFIG += c++11
 
 SOURCES += main.cpp \
-    imageio.cpp
+    imageio.cpp \
+    imageprocessing.cpp
 
 RESOURCES += qml.qrc
 
@@ -54,4 +55,5 @@ DISTFILES += \
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 HEADERS += \
-    imageio.h
+    imageio.h \
+    imageprocessing.h
