@@ -2,6 +2,8 @@ import QtQuick 2.7
 import QtQuick.Window 2.2
 import QtMultimedia 5.5
 
+import InteractiveCanvas 1.0
+
 Window {
     visible: true
     visibility: "FullScreen"
@@ -108,7 +110,7 @@ Window {
 
                     onTapped: {
                         tools.close();
-                        canvas.clear()
+                        drawingarea.clear()
                         for(var i = 0; i < drawing.pictures.length; i++) {
                             var pic = drawing.pictures.pop();
                             pic.destroy();
@@ -165,7 +167,7 @@ Window {
 
                 function uniqueSelect(pen) {
                     deselectAll();
-                    drawingarea.fillbucket=false;
+                    drawingarea.mode=InteractiveCanvas.DRAW;
                     penWidthChooser.close();
                     pen.selected = true;
                 }
@@ -202,10 +204,10 @@ Window {
                     id: fillbucket
                     color: colorpicker.paintbrushColor
                     icon: "round-format_color_fill-24px.svg"
-                    selected: drawingarea.fillbucket
+                    selected: drawingarea.mode == InteractiveCanvas.FILL
                     onTapped: {
                         penWidthChooser.close();
-                        drawingarea.fillbucket=true;
+                        drawingarea.mode=InteractiveCanvas.FILL;
                     }
 
                 }
@@ -271,18 +273,16 @@ Window {
                 ]
             }
 
-        DrawingArea {
+        InteractiveCanvas {
             id: drawingarea
             height: parent.height
             width: parent.width
             anchors.left: parent.left
             anchors.top: parent.top
 
-            lineWidth: penWidthChooser.penWidth
-            fgColor: colorpicker.paintbrushColor
+            size: penWidthChooser.penWidth
+            color: colorpicker.paintbrushColor
             //bgImage: "res/tutorial_bg.svg"
-
-            touchs: touchArea
         }
 
 

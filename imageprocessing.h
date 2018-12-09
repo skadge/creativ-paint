@@ -2,38 +2,68 @@
 #define IMAGEPROCESSING_H
 
 #include <QObject>
+#include <QVector>
+#include <map>
+#include <QPointF>
 #include <QImage>
-#include <QQuickImageProvider>
+#include <QQuickPaintedItem>
 
-class FloodFill : public QObject
+
+class InteractiveCanvas : public QQuickPaintedItem
 {
     Q_OBJECT
-    Q_PROPERTY(QString filledImage READ getImage NOTIFY onImageFilled)
-    Q_PROPERTY(QString data WRITE setImage MEMBER _data)
+    Q_PROPERTY(Mode mode READ mode WRITE setMode NOTIFY modeChanged)
+    Q_PROPERTY(QColor color MEMBER _activeColor)
+    Q_PROPERTY(int size MEMBER _size)
 
 public:
-    explicit FloodFill(QObject *parent = nullptr);
+    explicit InteractiveCanvas(QQuickItem *parent = nullptr);
 
-    virtual ~FloodFill(){}
+    virtual ~InteractiveCanvas(){}
 
-    Q_INVOKABLE void fill(int x, int y, const QColor& replace_color);
+    enum Mode {DRAW, FILL, ERASE};
+    Q_ENUM(Mode)
 
-    void setImage(const QString& data);
+    void setMode(Mode mode)
+    {
+        _mode = mode;
+        emit modeChanged(mode);
+    }
 
-    const QString& getImage();
+    Mode mode() const
+    { return _mode; }
+
+    void paint(QPainter *painter);
+
+    Q_INVOKABLE void clear();
+
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    //virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    //virtual void wheelEvent(QWheelEvent *event);
+    virtual void touchEvent(QTouchEvent *event);
+    //virtual void hoverEnterEvent(QHoverEvent *event);
+    //virtual void hoverMoveEvent(QHoverEvent *event);
+    //virtual void hoverLeaveEvent(QHoverEvent *event);
 
 signals:
-    void onImageFilled();
+    void modeChanged(Mode);
 
 public slots:
 
 private:
-    QString _data;
-    bool dirty;
-    bool repainting;
-    QString _data_filled;
+
     QImage _source;
-    void floodfill_inner(QImage& image, int sx, int sy, QRgb replace_color);
+
+    std::map<int, QVector<QPointF>> _strokes;
+    QVector<QPointF> _zones_to_fill;
+
+    QColor _activeColor;
+    int _size;
+    Mode _mode;
+
+    void fill(QImage& image, int sx, int sy, QRgb replace_color);
 };
 
 #endif // IMAGEPROCESSING_H
