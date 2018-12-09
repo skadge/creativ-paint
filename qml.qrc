@@ -18,7 +18,6 @@
         <file>round-share-24px.svg</file>
         <file>eraser-solid.svg</file>
         <file>DrawingArea.qml</file>
-        <file>TouchJoint.qml</file>
         <file>round-format_color_fill-24px.svg</file>
     </qresource>
 </RCC>

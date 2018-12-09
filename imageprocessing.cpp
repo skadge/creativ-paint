@@ -9,22 +9,24 @@
 typedef std::pair<int,int> point;
 
 InteractiveCanvas::InteractiveCanvas(QQuickItem *parent) :
-    QQuickPaintedItem(parent)
+    QQuickPaintedItem(parent),
+    _mode(DRAW)
 {
     setAcceptedMouseButtons(Qt::AllButtons);
-    setAcceptHoverEvents(true);
+    setAcceptTouchEvents(true);
+    //setAcceptHoverEvents(true);
 }
 
 void InteractiveCanvas::mousePressEvent(QMouseEvent *event) {
-    qDebug()<<"mousePressEvent(QMouseEvent *event)       "<<event;
+    //qDebug()<<"mousePressEvent(QMouseEvent *event)       "<<event;
 }
 
 void InteractiveCanvas::mouseMoveEvent(QMouseEvent *event) {
-    qDebug()<<"mouseMoveEvent(QMouseEvent *event)        "<<event;
+    //qDebug()<<"mouseMoveEvent(QMouseEvent *event)        "<<event;
 }
 
 void InteractiveCanvas::mouseReleaseEvent(QMouseEvent *event) {
-    qDebug()<<"mouseReleaseEvent(QMouseEvent *event)     "<<event;
+    //qDebug()<<"mouseReleaseEvent(QMouseEvent *event)     "<<event;
 }
 
 //void InteractiveCanvas::mouseDoubleClickEvent(QMouseEvent *event)  {qDebug()<<"mouseDoubleClickEvent(QMouseEvent *event) "<<event;}
@@ -32,6 +34,8 @@ void InteractiveCanvas::mouseReleaseEvent(QMouseEvent *event) {
 
 void InteractiveCanvas::touchEvent(QTouchEvent *event) {
     //qDebug()<<"touchEvent(QTouchEvent *event)            "<<event;
+
+    qDebug() << event->touchPoints().size() << " touchs";
 
     for(const auto& p : event->touchPoints()) {
         if(_mode == FILL) {
@@ -53,6 +57,7 @@ void InteractiveCanvas::touchEvent(QTouchEvent *event) {
         else {
             qDebug() << "Mode " << _mode << " not yet implemented";
         }
+
     }
 }
 
@@ -105,8 +110,8 @@ void InteractiveCanvas::paint(QPainter *painter)
 void InteractiveCanvas::clear()
 {
 
-   _source.fill(255);
-   update();
+    _source.fill(255);
+    update();
 }
 
 void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) {

@@ -134,7 +134,7 @@ Window {
         handle.right: penDrawerContainer.right
         handle.top: penDrawerContainer.bottom
         handlecolor: "#9c27b0"
-        icon: drawingarea.fillbucket ? "round-format_color_fill-24px.svg" : "round-create-24px.svg"
+        icon: drawingarea.mode == InteractiveCanvas.FILL ? "round-format_color_fill-24px.svg" : (drawingarea.mode == InteractiveCanvas.DRAW ? "round-create-24px.svg" : "eraser-solid.svg")
 
         property alias penWidth: sizeGrid.penWidth
 
@@ -201,6 +201,18 @@ Window {
                 }
 
                 Button {
+                    id: pencil
+                    color: colorpicker.paintbrushColor
+                    icon: "round-create-24px.svg"
+                    selected: drawingarea.mode == InteractiveCanvas.DRAW
+                    onTapped: {
+                        penWidthChooser.close();
+                        drawingarea.mode=InteractiveCanvas.DRAW;
+                    }
+
+                }
+
+                Button {
                     id: fillbucket
                     color: colorpicker.paintbrushColor
                     icon: "round-format_color_fill-24px.svg"
@@ -208,6 +220,18 @@ Window {
                     onTapped: {
                         penWidthChooser.close();
                         drawingarea.mode=InteractiveCanvas.FILL;
+                    }
+
+                }
+
+                Button {
+                    id: eraser
+                    //color: colorpicker.paintbrushColor
+                    icon: "eraser-solid.svg"
+                    selected: drawingarea.mode == InteractiveCanvas.ERASE
+                    onTapped: {
+                        penWidthChooser.close();
+                        drawingarea.mode=InteractiveCanvas.ERASE;
                     }
 
                 }
@@ -251,9 +275,6 @@ Window {
         property var selectedPicture
 
         property int highestZ: 1
-        property alias drawingColor: colorpicker.color
-
-        property var strokes: []
 
         MultiPointTouchArea {
                 id: touchArea
@@ -264,47 +285,50 @@ Window {
                 }
 
                 touchPoints: [
-                    TouchJoint {id:touch1;name:"touch1"},
-                    TouchJoint {id:touch2;name:"touch2"},
-                    TouchJoint {id:touch3;name:"touch3"},
-                    TouchJoint {id:touch4;name:"touch4"},
-                    TouchJoint {id:touch5;name:"touch5"},
-                    TouchJoint {id:touch6;name:"touch6"}
+                    TouchPoint {id:touch1},
+                    TouchPoint {id:touch2},
+                    TouchPoint {id:touch3},
+                    TouchPoint {id:touch4},
+                    TouchPoint {id:touch5},
+                    TouchPoint {id:touch6}
                 ]
-            }
 
         InteractiveCanvas {
             id: drawingarea
-            height: parent.height
-            width: parent.width
-            anchors.left: parent.left
-            anchors.top: parent.top
+            anchors.fill: parent
 
             size: penWidthChooser.penWidth
             color: colorpicker.paintbrushColor
             //bgImage: "res/tutorial_bg.svg"
         }
+            }
 
 
         ParticleFlame {
-                color: touch1.color
+                color: colorpicker.paintbrushColor
                 emitterX: touch1.x
                 emitterY: touch1.y
                 emitting: touch1.pressed
         }
 
         ParticleFlame {
-                color: touch2.color
+                color: colorpicker.paintbrushColor
                 emitterX: touch2.x
                 emitterY: touch2.y
                 emitting: touch2.pressed
 
         }
         ParticleFlame {
-                color: touch3.color
+                color: colorpicker.paintbrushColor
                 emitterX: touch3.x
                 emitterY: touch3.y
                 emitting: touch3.pressed
+        }
+        ParticleFlame {
+                color: colorpicker.paintbrushColor
+                emitterX: touch4.x
+                emitterY: touch4.y
+                emitting: touch4.pressed
         }
 
 }

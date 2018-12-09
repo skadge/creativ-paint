@@ -52,18 +52,6 @@ Drawer {
 
             Component.onCompleted: createColors();
 
-            Button {
-                icon: "eraser-solid.svg"
-                onTapped: {
-                    colorpicker.close();
-                    selected=true;
-                    for (var i = 0; i < colorGrid.children.length; i++) {
-                            colorGrid.children[i].selected = false;
-                    }
-                }
-            }
-
-
             function uniqueSelect(sampler) {
                     for (var i = 0; i < children.length; i++) {
                             children[i].selected = false;
