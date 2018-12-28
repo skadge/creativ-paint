@@ -254,6 +254,8 @@ Window {
         anchors.right: parent.right
         shadow: true
 
+        visible: Qt.platform.os == "android"
+
         z: 5
 
         onTapped: {
