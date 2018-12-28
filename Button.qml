@@ -56,7 +56,7 @@ Item {
     DropShadow {
         cached: true
         anchors.fill: button
-        radius: 20.0
+        radius: icon.width/5
         spread: 0.
         samples: 21
         color: shadow ? "#80000000":'transparent'
