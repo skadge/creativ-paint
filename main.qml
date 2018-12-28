@@ -175,33 +175,6 @@ Window {
 
 
                 Button {
-                    id: penlarge
-                    sizefactor: 1.0
-                    color: colorpicker.paintbrushColor
-                    onTapped: sizeGrid.uniqueSelect(penlarge)
-
-                }
-                Button {
-                    id: penmedium
-                    sizefactor: 0.7
-                    color: colorpicker.paintbrushColor
-                    onTapped: sizeGrid.uniqueSelect(penmedium)
-                }
-                Button {
-                    id: pensmall
-                    sizefactor: 0.5
-                    color: colorpicker.paintbrushColor
-                    selected: true
-                    onTapped: sizeGrid.uniqueSelect(pensmall)
-                }
-                Button {
-                    id: penxsmall
-                    sizefactor: 0.2
-                    color: colorpicker.paintbrushColor
-                    onTapped: sizeGrid.uniqueSelect(penxsmall)
-                }
-
-                Button {
                     id: pencil
                     color: colorpicker.paintbrushColor
                     icon: "round-create-24px.svg"
@@ -236,6 +209,34 @@ Window {
                     }
 
                 }
+
+                Button {
+                    id: penlarge
+                    sizefactor: 1.0
+                    color: colorpicker.paintbrushColor
+                    onTapped: sizeGrid.uniqueSelect(penlarge)
+
+                }
+                Button {
+                    id: penmedium
+                    sizefactor: 0.7
+                    color: colorpicker.paintbrushColor
+                    onTapped: sizeGrid.uniqueSelect(penmedium)
+                }
+                Button {
+                    id: pensmall
+                    sizefactor: 0.5
+                    color: colorpicker.paintbrushColor
+                    selected: true
+                    onTapped: sizeGrid.uniqueSelect(pensmall)
+                }
+                Button {
+                    id: penxsmall
+                    sizefactor: 0.2
+                    color: colorpicker.paintbrushColor
+                    onTapped: sizeGrid.uniqueSelect(penxsmall)
+                }
+
             }
         }
     }
