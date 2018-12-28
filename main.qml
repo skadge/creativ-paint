@@ -3,6 +3,7 @@ import QtQuick.Window 2.2
 import QtMultimedia 5.5
 
 import InteractiveCanvas 1.0
+import ImageIO 1.0
 
 Window {
     visible: true
@@ -259,10 +260,16 @@ Window {
 
         onTapped: {
             closeAllDrawers();
-            drawingarea.save();
+            var path = drawingarea.save();
+            console.log("Saving picture to " + path);
+            imageio.shareImage(path);
         }
 
 
+    }
+
+    ImageIO {
+        id: imageio
     }
 
     Rectangle {

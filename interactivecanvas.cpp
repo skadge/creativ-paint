@@ -3,8 +3,10 @@
 #include <QDebug>
 #include <QPainter>
 #include <QBrush>
+#include <QDir>
+#include <QStandardPaths>
 
-#include "imageprocessing.h"
+#include "interactivecanvas.h"
 
 typedef std::pair<int,int> point;
 
@@ -112,6 +114,21 @@ void InteractiveCanvas::clear()
 
     _source.fill(255);
     update();
+}
+
+QString InteractiveCanvas::save()
+{
+    auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+    auto path = dir.absoluteFilePath("touchpaint-picture.jpg");
+   _source.save(path);
+
+   // in order to set the background color to white, we create a new, temporary white image and paint the canvas on top of it.
+   QImage tmp(_source.size(),QImage::Format_RGB32);
+   tmp.fill(Qt::white);
+   QPainter painter(&tmp);
+   painter.drawImage(0, 0, _source);
+   tmp.save(path, "JPG", 95);
+   return path;
 }
 
 void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) {

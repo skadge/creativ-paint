@@ -14,7 +14,7 @@ CONFIG += c++11
 
 SOURCES += main.cpp \
     imageio.cpp \
-    imageprocessing.cpp
+    interactivecanvas.cpp
 
 RESOURCES += qml.qrc
 
@@ -50,10 +50,11 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/src/org/guakamole/shareimage/ShareImage.java
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 HEADERS += \
     imageio.h \
-    imageprocessing.h
+    interactivecanvas.h

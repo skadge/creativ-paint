@@ -37,6 +37,9 @@ public:
 
     Q_INVOKABLE void clear();
 
+    // save the current picture as a PNG to a writable destination, and return the path
+    Q_INVOKABLE QString save();
+
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
