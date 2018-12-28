@@ -37,7 +37,7 @@ void InteractiveCanvas::mouseReleaseEvent(QMouseEvent *event) {
 void InteractiveCanvas::touchEvent(QTouchEvent *event) {
     //qDebug()<<"touchEvent(QTouchEvent *event)            "<<event;
 
-    qDebug() << event->touchPoints().size() << " touchs";
+    //qDebug() << event->touchPoints().size() << " touchs";
 
     for(const auto& p : event->touchPoints()) {
         if(_mode == FILL) {
