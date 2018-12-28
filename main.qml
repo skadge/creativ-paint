@@ -152,13 +152,9 @@ Window {
                 columns: 8
                 layoutDirection: Qt.RightToLeft
 
-                property real penWidth: {
-                    for (var i = 0; i < children.length; i++) {
-                        if(children[i].selected)
-                            return children[i].sizefactor * Screen.width/12;
-                    }
-                    return 10;
-                }
+                property real sizefactor: 0.5
+                property real penWidth: sizefactor * Screen.width/12
+
                 function deselectAll() {
                     penlarge.selected = false;
                     penmedium.selected = false;
@@ -170,6 +166,7 @@ Window {
                     deselectAll();
                     drawingarea.mode=InteractiveCanvas.DRAW;
                     penWidthChooser.close();
+                    sizefactor = pen.sizefactor;
                     pen.selected = true;
                 }
 
