@@ -7,7 +7,7 @@ Image {
 
     fillMode: Image.PreserveAspectFit
 
-    property bool controlVisible: true
+    property bool controlVisible: enabled
 
     signal imagePlaced(var myself)
 
@@ -45,6 +45,7 @@ Image {
 
         MouseArea {
             id: dragArea
+            enabled: picture.enabled
             hoverEnabled: true
             anchors.fill: parent
             drag.target: picture
@@ -69,25 +70,6 @@ Image {
                     var scaleBefore = picture.scale;
                     picture.scale += picture.scale * wheel.angleDelta.y / 120 / 10;
                 }
-            }
-        }
-
-        Button {
-            icon: "round-done-24px.svg"
-            color: "green"
-            selected: true
-
-            visible: controlVisible
-
-            anchors.right: parent.right
-            anchors.rightMargin: width/2
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: width/2
-
-            onTapped:{
-                dragArea.enabled = false;
-                controlVisible = false;
-                imagePlaced(picture)
             }
         }
 

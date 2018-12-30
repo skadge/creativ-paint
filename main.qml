@@ -35,25 +35,10 @@ Window {
                 onImageCaptured: {
                     camera.stop();
                     cameraCapture.visible=false;
-                    createPicture(preview);
+                    picturePlacer.source = preview;
+                    picturePlacer.enabled = true;
+                    drawing.state = "img_placement";
                 }
-            }
-
-            function destroyPicture(pic) {
-                pic.destroy();
-            }
-
-            function createPicture(picture) {
-                var component = Qt.createComponent("GesturePicture.qml");
-                var pic = component.createObject(drawing, {"source": picture,
-                                                     "width": Screen.width/2,
-                                                     "z": 1
-                                                 });
-                // once the user click the 'done' button, the manipulable image is copied
-                // to the canvas, and will be destroyed once the copy is complete
-                pic.imagePlaced.connect(drawingarea.insertImage);
-
-                drawingarea.imageInserted.connect(destroyPicture);
             }
         }
 
@@ -81,7 +66,8 @@ Window {
 
     ColorPicker {
         id: colorpicker
-        z:5
+        visible: drawing.state == "drawing"
+        z: 5
 
         onIsopenChanged: {
             if (isopen) closeOtherDrawers(colorpicker);
@@ -95,6 +81,7 @@ Window {
     }
     Drawer {
         id: toolsDrawer
+        visible: drawing.state == "drawing"
 
         anchors.right: parent.right
         z: 5
@@ -222,6 +209,8 @@ Window {
             if (isopen) closeOtherDrawers(extrasDrawer);
         }
 
+        visible: drawing.state == "drawing"
+
 
         anchors.left: parent.left
         topDrawer: false
@@ -266,10 +255,6 @@ Window {
                     onTapped: {
                         extrasDrawer.close();
                         drawingarea.clear()
-                        for(var i = 0; i < drawing.pictures.length; i++) {
-                            var pic = drawing.pictures.pop();
-                            pic.destroy();
-                        }
                     }
                 }
             }
@@ -284,11 +269,30 @@ Window {
         anchors.left: parent.left
         shadow: true
 
+        visible: drawing.state == "drawing"
+
         z: 5
         onTapped: {
             closeAllDrawers();
             camera.start();
             cameraCapture.visible=true;
+        }
+    }
+
+    Button {
+        icon: "round-done-24px.svg"
+        color: "green"
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        shadow: true
+
+        visible: drawing.state == "img_placement"
+
+        z: 5
+        onTapped:{
+            picturePlacer.enabled = false;
+            picturePlacer.imagePlaced(picturePlacer);
+            drawing.state = "drawing"
         }
     }
 
@@ -306,16 +310,33 @@ Window {
         id: imageio
     }
 
+    GesturePicture {
+        id: picturePlacer
+        width: Screen.width/2
+        visible: drawing.state == "img_placement"
+        z: 1
+        onImagePlaced: {
+            drawingarea.insertImage(picturePlacer)
+        }
+    }
+
     Rectangle {
         id: drawing
         anchors.fill: parent
 
+        states: [
+            State {
+                name:"drawing"
+            },
+            State {
+                name: "img_placement"
+
+            }
+        ]
+        state: "drawing"
+
+
         color: Qt.rgba(0,0,0,0)
-
-        property var pictures: []
-        property var selectedPicture
-
-        property int highestZ: 1
 
         MultiPointTouchArea {
             id: touchArea
@@ -374,3 +395,4 @@ Window {
 
     }
 }
+
