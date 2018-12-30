@@ -6,7 +6,7 @@ Item {
 
     id: myself
     property alias icon: icon.source
-    property color color: "grey"
+    property color color: Qt.rgba(1,1,1,0) // transparent
     property alias border: button.border
 
     property bool shadow: false
@@ -17,6 +17,8 @@ Item {
 
     width: Screen.width/12
     height: width
+
+    Behavior on opacity { PropertyAnimation{}}
 
     Rectangle {
 

@@ -2,12 +2,12 @@ TEMPLATE = app
 
 linux:!android {
     message("* Using settings for Linux.")
-    QT += qml quick widgets
+    QT += qml quick widgets multimedia
 }
 
 android {
     message("* Using settings for Android.")
-    QT += qml quick widgets svg xml gui core androidextras
+    QT += qml quick widgets svg xml gui core androidextras multimedia
 }
 
 CONFIG += c++11
@@ -51,7 +51,8 @@ DISTFILES += \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat \
-    android/src/org/guakamole/shareimage/ShareImage.java
+    android/src/org/guakamole/shareimage/ShareImage.java \
+    round-done-24px.svg
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 

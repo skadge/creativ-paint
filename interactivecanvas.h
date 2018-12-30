@@ -8,7 +8,6 @@
 #include <QImage>
 #include <QQuickPaintedItem>
 
-
 class InteractiveCanvas : public QQuickPaintedItem
 {
     Q_OBJECT
@@ -40,6 +39,8 @@ public:
     // save the current picture as a PNG to a writable destination, and return the path
     Q_INVOKABLE QString save();
 
+    Q_INVOKABLE void insertImage(QQuickItem* item);
+
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
@@ -52,6 +53,7 @@ public:
 
 signals:
     void modeChanged(Mode);
+    void imageInserted(QQuickItem* item);
 
 public slots:
 

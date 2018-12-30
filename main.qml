@@ -33,16 +33,27 @@ Window {
 
             imageCapture {
                 onImageCaptured: {
-                    //createPicture(preview);
-                    drawingarea.bgImage = preview;
-                    cameraCapture.visible=false;
                     camera.stop();
+                    cameraCapture.visible=false;
+                    createPicture(preview);
                 }
             }
+
+            function destroyPicture(pic) {
+                pic.destroy();
+            }
+
             function createPicture(picture) {
                var component = Qt.createComponent("GesturePicture.qml");
-               var pic = component.createObject(drawing, {"source": picture, "width": Screen.width / 3, "z": 1});
-                drawing.pictures.push(pic);
+               var pic = component.createObject(drawing, {"source": picture,
+                                                          "width": Screen.width/2,
+                                                          "z": 1
+                                                        });
+                // once the user click the 'done' button, the manipulable image is copied
+                // to the canvas, and will be destroyed once the copy is complete
+                pic.imagePlaced.connect(drawingarea.insertImage);
+
+                drawingarea.imageInserted.connect(destroyPicture);
             }
 }
 
@@ -52,9 +63,17 @@ Window {
             focus : visible // to receive focus and capture key events when visible
             anchors.fill: parent
 
-            MouseArea {
-                anchors.fill: parent;
-                onClicked: camera.imageCapture.capture();
+            Button {
+                color: "red"
+                width: Screen.width/8
+                selected: true
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: width/3
+
+                onTapped: {
+                    camera.imageCapture.capture();
+                }
             }
         }
 

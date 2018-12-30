@@ -1,79 +1,93 @@
 import QtQuick 2.6
 import QtGraphicalEffects 1.0
+import QtQuick.Window 2.2
 
 Image {
-        id: picture
+    id: picture
 
-        fillMode: Image.PreserveAspectFit
+    fillMode: Image.PreserveAspectFit
 
-        Behavior on scale { PropertyAnimation{}}
+    property bool controlVisible: true
 
-        Image {
-            source: "hand.svg"
-            width:100
-            height: width
-            anchors.left: parent.left
-            anchors.leftMargin: -width/2
-            anchors.top: parent.top
-            anchors.topMargin: -width/2
+    signal imagePlaced(var myself)
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                        picture.z = ++picture.parent.highestZ;
-                        picture.parent.selectedPicture=picture;
+    x: parent.width/2 - width/2
+    y: parent.height/2 - height/2
+
+    Behavior on scale { PropertyAnimation{}}
+
+    Button {
+        icon: "round-open_with-24px.svg"
+        width: parent.width * 0.5
+        opacity: 0.5
+        visible: controlVisible
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+
+    PinchArea {
+        id: pincharea
+        anchors.fill: parent
+        pinch.target: picture
+        pinch.minimumRotation: -360
+        pinch.maximumRotation: 360
+        pinch.minimumScale: 0.1
+        pinch.maximumScale: 10
+        pinch.dragAxis: Pinch.XAndYAxis
+
+        onPinchStarted: {
+            picture.scale *= 1.1;
+        }
+
+        MouseArea {
+            id: dragArea
+            hoverEnabled: true
+            anchors.fill: parent
+            drag.target: picture
+            scrollGestureEnabled: false  // 2-finger-flick gesture should pass through to the Flickable
+            onPressed: {
+                picture.scale *= 1.1;
+
+            }
+            onReleased: {
+                picture.scale /= 1.1;
+            }
+
+            onWheel: {
+                if (wheel.modifiers & Qt.ControlModifier) {
+                    picture.rotation += wheel.angleDelta.y / 120 * 5;
+                    if (Math.abs(picture.rotation) < 4)
+                        picture.rotation = 0;
+                } else {
+                    picture.rotation += wheel.angleDelta.x / 120;
+                    if (Math.abs(picture.rotation) < 0.6)
+                        picture.rotation = 0;
+                    var scaleBefore = picture.scale;
+                    picture.scale += picture.scale * wheel.angleDelta.y / 120 / 10;
                 }
             }
         }
 
-        PinchArea {
-                anchors.fill: parent
-                pinch.target: picture
-                pinch.minimumRotation: -360
-                pinch.maximumRotation: 360
-                pinch.minimumScale: 0.1
-                pinch.maximumScale: 10
-                pinch.dragAxis: Pinch.XAndYAxis
+        Button {
+            icon: "round-done-24px.svg"
+            color: "green"
+            selected: true
 
-                enabled: picture.z >= picture.parent.highestZ
+            visible: controlVisible
 
-                onPinchStarted: {
-                        picture.z = ++picture.parent.highestZ;
-                        picture.parent.selectedPicture=picture;
-                        picture.scale *= 1.1;
-                }
+            anchors.right: parent.right
+            anchors.rightMargin: width/2
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: width/2
 
-                MouseArea {
-                        id: dragArea
-                        enabled: picture.z >= picture.parent.highestZ
-                        hoverEnabled: true
-                        anchors.fill: parent
-                        drag.target: picture
-                        scrollGestureEnabled: false  // 2-finger-flick gesture should pass through to the Flickable
-                        onPressed: {
-                                picture.z = ++picture.parent.highestZ;
-                                picture.parent.selectedPicture=picture;
-                                picture.scale *= 1.1;
-
-                        }
-                        onReleased: {
-                            picture.scale /= 1.1;
-                        }
-
-                        //onEntered: parent.setFrameColor();
-                        onWheel: {
-                                if (wheel.modifiers & Qt.ControlModifier) {
-                                        picture.rotation += wheel.angleDelta.y / 120 * 5;
-                                        if (Math.abs(picture.rotation) < 4)
-                                                picture.rotation = 0;
-                                } else {
-                                        picture.rotation += wheel.angleDelta.x / 120;
-                                        if (Math.abs(picture.rotation) < 0.6)
-                                                picture.rotation = 0;
-                                        var scaleBefore = picture.scale;
-                                        picture.scale += picture.scale * wheel.angleDelta.y / 120 / 10;
-                                }
-                        }
-                }
+            onTapped:{
+                dragArea.enabled = false;
+                controlVisible = false;
+                imagePlaced(picture)
+            }
         }
+
+    }
 }

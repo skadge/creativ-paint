@@ -5,6 +5,7 @@
 #include <QBrush>
 #include <QDir>
 #include <QStandardPaths>
+#include <QQuickItemGrabResult>
 
 #include "interactivecanvas.h"
 
@@ -131,6 +132,31 @@ QString InteractiveCanvas::save()
    return path;
 }
 
+void InteractiveCanvas::insertImage(QQuickItem *item)
+{
+    auto x = item->x();
+    auto y = item->y();
+    auto theta = item->rotation();
+    auto scale = item->scale();
+
+    auto grabResult = item->grabToImage();
+
+     connect(grabResult.data(), &QQuickItemGrabResult::ready, [=] {
+           //auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
+           //auto path = dir.absoluteFilePath("tmp.jpg");
+
+            //grabResult->saveToFile(path);
+            QPainter painter(&_source);
+            painter.translate(x/scale,y/scale);
+            painter.scale(scale, scale);
+            painter.rotate(theta);
+            painter.drawImage(0,0, grabResult->image());
+            update();
+
+            emit imageInserted(item);
+     });
+}
+
 void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) {
 
     if (image.pixel(sx, sy) == replace_color) return;
@@ -185,4 +211,3 @@ void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) 
     }
 
 }
-
