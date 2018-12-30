@@ -11,6 +11,7 @@ Image {
 
     signal imagePlaced(var myself)
 
+    width:50
     x: parent.width/2 - width/2
     y: parent.height/2 - height/2
 
@@ -21,6 +22,7 @@ Image {
         width: parent.width * 0.5
         opacity: 0.5
         visible: controlVisible
+        color: Qt.rgba(0,0,0,0) // transparent
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter

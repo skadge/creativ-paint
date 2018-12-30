@@ -42,15 +42,15 @@ Rectangle {
     }
 
     function open() {
+                isopen=true;
                 z=10;
                 y = topDrawer ? 0 : parent.height - height + toggleButton.height
-                isopen=true;
     }
 
     function close() {
-                z=5;
-                y = topDrawer ? -height + toggleButton.height : parent.height
                 isopen=false;
+                y = topDrawer ? -height + toggleButton.height : parent.height
+                //z=5;
 
     }
 

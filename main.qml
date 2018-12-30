@@ -44,18 +44,18 @@ Window {
             }
 
             function createPicture(picture) {
-               var component = Qt.createComponent("GesturePicture.qml");
-               var pic = component.createObject(drawing, {"source": picture,
-                                                          "width": Screen.width/2,
-                                                          "z": 1
-                                                        });
+                var component = Qt.createComponent("GesturePicture.qml");
+                var pic = component.createObject(drawing, {"source": picture,
+                                                     "width": Screen.width/2,
+                                                     "z": 1
+                                                 });
                 // once the user click the 'done' button, the manipulable image is copied
                 // to the canvas, and will be destroyed once the copy is complete
                 pic.imagePlaced.connect(drawingarea.insertImage);
 
                 drawingarea.imageInserted.connect(destroyPicture);
             }
-}
+        }
 
         VideoOutput {
             id: videoOutput
@@ -86,74 +86,26 @@ Window {
         onIsopenChanged: {
             if (isopen) closeOtherDrawers(colorpicker);
         }
-    }
 
-    Drawer {
-        id: tools
-
-        onIsopenChanged: {
-            if (isopen) closeOtherDrawers(tools);
-        }
-
-
-        anchors.left: parent.left
-        topDrawer: false
-        icon: "round-more_horiz-24px.svg"
-
-        handle.bottom: toolsDrawerContainer.top
-        handle.left: toolsDrawerContainer.left
-        handlecolor: "#ffc107"
-
-        z: 5
-
-        Rectangle {
-            id: toolsDrawerContainer
-            color: "#ffecb3"
-
-            height: childrenRect.height
-            width: Screen.width
-
-            Grid {
-                id: toolsGrid
-
-                Button {
-                    icon: "round-photo_camera-24px.svg"
-                    onTapped: {
-                        tools.close();
-                        camera.start();
-                        cameraCapture.visible=true;
-                    }
-                }
-
-                Button {
-                    icon: "round-delete_forever-24px.svg"
-
-                    onTapped: {
-                        tools.close();
-                        drawingarea.clear()
-                        for(var i = 0; i < drawing.pictures.length; i++) {
-                            var pic = drawing.pictures.pop();
-                            pic.destroy();
-                        }
-                    }
-                }
+        onColorUpdated: {
+            if(drawingarea.mode == InteractiveCanvas.FILL) {
+                drawingarea.mode = InteractiveCanvas.DRAW;
             }
         }
     }
-
     Drawer {
-        id: penWidthChooser
+        id: toolsDrawer
 
         anchors.right: parent.right
         z: 5
 
         onIsopenChanged: {
-            if (isopen) closeOtherDrawers(penWidthChooser);
+            if (isopen) closeOtherDrawers(toolsDrawer);
         }
 
-        handle.right: penDrawerContainer.right
+        handle.left: penDrawerContainer.left
         handle.top: penDrawerContainer.bottom
-        handlecolor: "#9c27b0"
+        handlecolor: colorpicker.paintbrushColor
         icon: drawingarea.mode == InteractiveCanvas.FILL ? "round-format_color_fill-24px.svg" : (drawingarea.mode == InteractiveCanvas.DRAW ? "round-create-24px.svg" : "eraser-solid.svg")
 
         property alias penWidth: sizeGrid.penWidth
@@ -166,10 +118,51 @@ Window {
             width: Screen.width
 
             Grid {
+                anchors.left: parent.left
+                id: toolGrid
+                columns: 8
+                layoutDirection: Qt.LeftToRight
+
+                Button {
+                    id: pencil
+                    color: colorpicker.paintbrushColor
+                    icon: "round-create-24px.svg"
+                    selected: drawingarea.mode == InteractiveCanvas.DRAW
+                    onTapped: {
+                        toolsDrawer.close();
+                        drawingarea.mode=InteractiveCanvas.DRAW;
+                    }
+
+                }
+
+                Button {
+                    id: fillbucket
+                    color: colorpicker.paintbrushColor
+                    icon: "round-format_color_fill-24px.svg"
+                    selected: drawingarea.mode == InteractiveCanvas.FILL
+                    onTapped: {
+                        toolsDrawer.close();
+                        drawingarea.mode=InteractiveCanvas.FILL;
+                    }
+
+                }
+
+                //Button {
+                //    id: eraser
+                //    icon: "eraser-solid.svg"
+                //    selected: drawingarea.mode == InteractiveCanvas.ERASE
+                //    onTapped: {
+                //        toolsDrawer.close();
+                //        drawingarea.mode=InteractiveCanvas.ERASE;
+                //    }
+
+                //}
+            }
+            Grid {
                 anchors.right: parent.right
                 id: sizeGrid
                 columns: 8
-                layoutDirection: Qt.RightToLeft
+                layoutDirection: Qt.LeftToRight
 
                 property real sizefactor: 0.5
                 property real penWidth: sizefactor * Screen.width/12
@@ -184,47 +177,12 @@ Window {
                 function uniqueSelect(pen) {
                     deselectAll();
                     drawingarea.mode=InteractiveCanvas.DRAW;
-                    penWidthChooser.close();
+                    toolsDrawer.close();
                     sizefactor = pen.sizefactor;
                     pen.selected = true;
                 }
 
 
-                Button {
-                    id: pencil
-                    color: colorpicker.paintbrushColor
-                    icon: "round-create-24px.svg"
-                    selected: drawingarea.mode == InteractiveCanvas.DRAW
-                    onTapped: {
-                        penWidthChooser.close();
-                        drawingarea.mode=InteractiveCanvas.DRAW;
-                    }
-
-                }
-
-                Button {
-                    id: fillbucket
-                    color: colorpicker.paintbrushColor
-                    icon: "round-format_color_fill-24px.svg"
-                    selected: drawingarea.mode == InteractiveCanvas.FILL
-                    onTapped: {
-                        penWidthChooser.close();
-                        drawingarea.mode=InteractiveCanvas.FILL;
-                    }
-
-                }
-
-                Button {
-                    id: eraser
-                    //color: colorpicker.paintbrushColor
-                    icon: "eraser-solid.svg"
-                    selected: drawingarea.mode == InteractiveCanvas.ERASE
-                    onTapped: {
-                        penWidthChooser.close();
-                        drawingarea.mode=InteractiveCanvas.ERASE;
-                    }
-
-                }
 
                 Button {
                     id: penlarge
@@ -257,34 +215,91 @@ Window {
         }
     }
 
-    function closeOtherDrawers(drawer) {
-        if ( drawer !== penWidthChooser) penWidthChooser.close();
-        if ( drawer !== tools) tools.close();
-        if ( drawer !== colorpicker) colorpicker.close();
-    }
-    function closeAllDrawers() {
-        closeOtherDrawers(undefined);
-    }
+    Drawer {
+        id: extrasDrawer
 
-    Button {
-        icon: "round-share-24px"
-        color: "#03a9f4"
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        shadow: true
-
-        visible: Qt.platform.os == "android"
-
-        z: 5
-
-        onTapped: {
-            closeAllDrawers();
-            var path = drawingarea.save();
-            console.log("Saving picture to " + path);
-            imageio.shareImage(path);
+        onIsopenChanged: {
+            if (isopen) closeOtherDrawers(extrasDrawer);
         }
 
 
+        anchors.left: parent.left
+        topDrawer: false
+        icon: "round-more_horiz-24px.svg"
+
+        handle.bottom: toolsDrawerContainer.top
+        handle.right: toolsDrawerContainer.right
+        handlecolor: "#ffc107"
+
+        z: 5
+
+        Rectangle {
+            id: toolsDrawerContainer
+            color: "#ffecb3"
+
+            height: childrenRect.height
+            width: Screen.width
+
+            Grid {
+                id: toolsGrid
+                layoutDirection: Qt.RightToLeft
+                anchors.right: parent.right
+
+                Button {
+                    icon: "round-share-24px"
+
+                    visible: Qt.platform.os == "android"
+
+                    onTapped: {
+                        extrasDrawer.close();
+                        var path = drawingarea.save();
+                        imageio.shareImage(path);
+                    }
+
+
+                }
+
+
+                Button {
+                    icon: "round-delete_forever-24px.svg"
+
+                    onTapped: {
+                        extrasDrawer.close();
+                        drawingarea.clear()
+                        for(var i = 0; i < drawing.pictures.length; i++) {
+                            var pic = drawing.pictures.pop();
+                            pic.destroy();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    Button {
+        icon: "round-photo_camera-24px.svg"
+        color: "#03a9f4"
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        shadow: true
+
+        z: 5
+        onTapped: {
+            closeAllDrawers();
+            camera.start();
+            cameraCapture.visible=true;
+        }
+    }
+
+    function closeOtherDrawers(drawer) {
+        if ( drawer !== toolsDrawer) toolsDrawer.close();
+        if ( drawer !== extrasDrawer) extrasDrawer.close();
+        if ( drawer !== colorpicker) colorpicker.close();
+    }
+
+    function closeAllDrawers() {
+        closeOtherDrawers(undefined);
     }
 
     ImageIO {
@@ -303,59 +318,59 @@ Window {
         property int highestZ: 1
 
         MultiPointTouchArea {
-                id: touchArea
-                anchors.fill: parent
-
-                onPressed: {
-                    closeAllDrawers()
-                }
-
-                touchPoints: [
-                    TouchPoint {id:touch1},
-                    TouchPoint {id:touch2},
-                    TouchPoint {id:touch3},
-                    TouchPoint {id:touch4},
-                    TouchPoint {id:touch5},
-                    TouchPoint {id:touch6}
-                ]
-
-        InteractiveCanvas {
-            id: drawingarea
+            id: touchArea
             anchors.fill: parent
 
-            size: penWidthChooser.penWidth
-            color: colorpicker.paintbrushColor
-            //bgImage: "res/tutorial_bg.svg"
-        }
+            onPressed: {
+                closeAllDrawers()
             }
 
+            touchPoints: [
+                TouchPoint {id:touch1},
+                TouchPoint {id:touch2},
+                TouchPoint {id:touch3},
+                TouchPoint {id:touch4},
+                TouchPoint {id:touch5},
+                TouchPoint {id:touch6}
+            ]
+
+            InteractiveCanvas {
+                id: drawingarea
+                anchors.fill: parent
+
+                size: toolsDrawer.penWidth
+                color: colorpicker.paintbrushColor
+                //bgImage: "res/tutorial_bg.svg"
+            }
+        }
+
 
         ParticleFlame {
-                color: colorpicker.paintbrushColor
-                emitterX: touch1.x
-                emitterY: touch1.y
-                emitting: touch1.pressed
+            color: colorpicker.paintbrushColor
+            emitterX: touch1.x
+            emitterY: touch1.y
+            emitting: touch1.pressed
         }
 
         ParticleFlame {
-                color: colorpicker.paintbrushColor
-                emitterX: touch2.x
-                emitterY: touch2.y
-                emitting: touch2.pressed
+            color: colorpicker.paintbrushColor
+            emitterX: touch2.x
+            emitterY: touch2.y
+            emitting: touch2.pressed
 
         }
         ParticleFlame {
-                color: colorpicker.paintbrushColor
-                emitterX: touch3.x
-                emitterY: touch3.y
-                emitting: touch3.pressed
+            color: colorpicker.paintbrushColor
+            emitterX: touch3.x
+            emitterY: touch3.y
+            emitting: touch3.pressed
         }
         ParticleFlame {
-                color: colorpicker.paintbrushColor
-                emitterX: touch4.x
-                emitterY: touch4.y
-                emitting: touch4.pressed
+            color: colorpicker.paintbrushColor
+            emitterX: touch4.x
+            emitterY: touch4.y
+            emitting: touch4.pressed
         }
 
-}
+    }
 }

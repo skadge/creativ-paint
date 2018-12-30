@@ -2,7 +2,7 @@ TEMPLATE = app
 
 linux:!android {
     message("* Using settings for Linux.")
-    QT += qml quick widgets multimedia
+    QT += qml quick widgets
 }
 
 android {

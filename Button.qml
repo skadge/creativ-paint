@@ -6,7 +6,7 @@ Item {
 
     id: myself
     property alias icon: icon.source
-    property color color: Qt.rgba(1,1,1,0) // transparent
+    property color color: Qt.rgba(0,0,0,0.3)
     property alias border: button.border
 
     property bool shadow: false
@@ -35,7 +35,7 @@ Item {
         border.width: selected ? 10 : 0
         border.color: selected ? Qt.darker(color) : 'white'
 
-        color: parent.color == "#00000000" ? "grey" : parent.color
+        color: parent.color
 
 
         Image {
