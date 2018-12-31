@@ -21,5 +21,6 @@
         <file>round-format_color_fill-24px.svg</file>
         <file>round-done-24px.svg</file>
         <file>round-open_with-24px.svg</file>
+        <file>blur-star.png</file>
     </qresource>
 </RCC>

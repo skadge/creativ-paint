@@ -95,7 +95,8 @@ Window {
         handlecolor: colorpicker.paintbrushColor
         icon: drawingarea.mode == InteractiveCanvas.FILL ? "round-format_color_fill-24px.svg" : (drawingarea.mode == InteractiveCanvas.DRAW ? "round-create-24px.svg" : "eraser-solid.svg")
 
-        property alias penWidth: sizeGrid.penWidth
+        property alias sizefactor: sizeGrid.sizefactor
+        property double penWidth: sizefactor * Screen.width/12
 
         Rectangle {
             id: penDrawerContainer
@@ -152,7 +153,6 @@ Window {
                 layoutDirection: Qt.LeftToRight
 
                 property real sizefactor: 0.5
-                property real penWidth: sizefactor * Screen.width/12
 
                 function deselectAll() {
                     penlarge.selected = false;
@@ -371,6 +371,7 @@ Window {
             emitterX: touch1.x
             emitterY: touch1.y
             emitting: touch1.pressed
+            sizeFactor: toolsDrawer.sizefactor
         }
 
         ParticleFlame {
@@ -378,6 +379,7 @@ Window {
             emitterX: touch2.x
             emitterY: touch2.y
             emitting: touch2.pressed
+            sizeFactor: toolsDrawer.sizefactor
 
         }
         ParticleFlame {
@@ -385,12 +387,14 @@ Window {
             emitterX: touch3.x
             emitterY: touch3.y
             emitting: touch3.pressed
+            sizeFactor: toolsDrawer.sizefactor
         }
         ParticleFlame {
             color: colorpicker.paintbrushColor
             emitterX: touch4.x
             emitterY: touch4.y
             emitting: touch4.pressed
+            sizeFactor: toolsDrawer.sizefactor
         }
 
     }

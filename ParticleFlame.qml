@@ -48,14 +48,20 @@ ParticleSystem {
     property alias emitterY: emitter.y
 
     property alias color: img.color
+    property double sizeFactor: 1.0
     property alias emitting: emitter.enabled
+
     ImageParticle {
         id: img
-        source: "blur-circle.png"
-        colorVariation: 0.1
+        source: "blur-star.png"
+        colorVariation: 0.3
+        rotationVariation: 0.1
+        rotationVelocity: 0
+        rotationVelocityVariation: 60
         color: "#ff521d"
         alpha: 1
     }
+
     Emitter {
         id: emitter
         velocityFromMovement: 10
@@ -63,9 +69,9 @@ ParticleSystem {
         lifeSpan: 1500
         velocity: PointDirection{ y: -90; yVariation: 50; }
         acceleration: PointDirection{ xVariation: 100; yVariation: 90; }
-        size: 51
-        sizeVariation: 53
-        endSize: 64
+        size: 51 * Math.min(sizeFactor * 2,1)
+        sizeVariation: 53 * Math.min(sizeFactor * 2, 1)
+        endSize: 64 * Math.min(sizeFactor * 2, 1)
         z:100
     }
 }
