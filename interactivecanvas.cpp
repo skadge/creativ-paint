@@ -1,4 +1,5 @@
 #include <stack>
+#include <cmath>
 
 #include <QDebug>
 #include <QPainter>
@@ -157,10 +158,32 @@ void InteractiveCanvas::insertImage(QQuickItem *item)
      });
 }
 
+inline bool InteractiveCanvas::isSameColor(QRgb a, QRgb b, qreal hue_b, qreal lightness_b) {
+
+    if (a == b) return true;
+
+    // dark or light -> compare lightness
+    // medium lightness -> compare hue
+    if(lightness_b < 0.2 or lightness_b > 0.8) {
+        auto lightness_a = QColor(a).lightnessF();
+        if(fabs(lightness_a - lightness_b) < HUE_EPSILON) return true;
+        return false;
+    }
+    else {
+        auto hue_a = QColor(a).hueF();
+        if(fabs(hue_a - hue_b) < HUE_EPSILON) return true;
+        return false;
+    }
+}
+
 void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) {
 
     if (image.pixel(sx, sy) == replace_color) return;
-    QRgb target_color = image.pixel(sx,sy);
+
+    QRgb target_rgb = image.pixel(sx,sy);
+    QColor target_color(target_rgb);
+    double target_hue = target_color.hslHueF();
+    double target_lightness = target_color.lightnessF();
 
     auto pixel_stack = std::stack<point>();
     pixel_stack.push({sx, sy});
@@ -173,17 +196,17 @@ void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) 
         std::tie(x, y) = pixel_stack.top();
         pixel_stack.pop();
 
-        while(y >= 0 && image.pixel(x,y) == target_color) {
+        while(y >= 0 && isSameColor(image.pixel(x,y), target_rgb, target_hue, target_lightness)) {
             y--;
         }
 
-        while(y++ < image.height()-1 && image.pixel(x,y) == target_color) {
+        while(y++ < image.height()-1 && isSameColor(image.pixel(x,y), target_rgb, target_hue, target_lightness)) {
 
             image.setPixel(x,y, replace_color);
 
             if(x > 0) {
 
-                if(image.pixel(x-1,y) == target_color) {
+                if(isSameColor(image.pixel(x-1,y), target_rgb, target_hue, target_lightness)) {
 
                     if(!reach_left) {
                         pixel_stack.push({x - 1, y});
@@ -197,7 +220,7 @@ void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) 
 
             if(x < image.width()-1) {
 
-                if(image.pixel(x+1,y) == target_color) {
+                if(isSameColor(image.pixel(x+1,y), target_rgb, target_hue, target_lightness)) {
                     if(!reach_right) {
                         pixel_stack.push({x + 1, y});
                         reach_right = true;

@@ -8,6 +8,9 @@
 #include <QImage>
 #include <QQuickPaintedItem>
 
+// the max hue difference between 2 pixels for them to be considered equal
+const double HUE_EPSILON = 0.05;
+
 class InteractiveCanvas : public QQuickPaintedItem
 {
     Q_OBJECT
@@ -51,6 +54,7 @@ public:
     //virtual void hoverMoveEvent(QHoverEvent *event);
     //virtual void hoverLeaveEvent(QHoverEvent *event);
 
+
 signals:
     void modeChanged(Mode);
     void imageInserted(QQuickItem* item);
@@ -69,6 +73,8 @@ private:
     Mode _mode;
 
     void fill(QImage& image, int sx, int sy, QRgb replace_color);
+
+    inline bool isSameColor(QRgb a, QRgb b, qreal hue_b, qreal lightness_b);
 };
 
 #endif // IMAGEPROCESSING_H
