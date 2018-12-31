@@ -15,6 +15,9 @@ Item {
 
     signal tapped(var myself)
 
+    property double lastClick: 0
+    property double delayBeforeNewClick: 1000 //ms
+
     width: Screen.width/12
     height: width
 
@@ -52,7 +55,13 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: tapped(myself)
+        onClicked: {
+            var now = new Date().getTime();
+            if ((now - lastClick) > delayBeforeNewClick) {
+                tapped(myself);
+            }
+            lastClick = now;
+        }
     }
 
     DropShadow {
