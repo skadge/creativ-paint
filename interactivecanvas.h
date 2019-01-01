@@ -74,6 +74,7 @@ private:
 
     void fill(QImage& image, int sx, int sy, QRgb replace_color);
 
+    QRgb _lastWrongColor; // permits fast path in 'isSameColor' when repeatidly comparing same colors
     inline bool isSameColor(QRgb a, QRgb b, qreal hue_b, qreal lightness_b);
 };
 

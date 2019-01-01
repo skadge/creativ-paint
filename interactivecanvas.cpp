@@ -160,23 +160,29 @@ void InteractiveCanvas::insertImage(QQuickItem *item)
 
 inline bool InteractiveCanvas::isSameColor(QRgb a, QRgb b, qreal hue_b, qreal lightness_b) {
 
+
     if (a == b) return true;
+    if (a == _lastWrongColor) return false; // fast path if we've seen that color before
 
     // dark or light -> compare lightness
     // medium lightness -> compare hue
     if(lightness_b < 0.2 or lightness_b > 0.8) {
         auto lightness_a = QColor(a).lightnessF();
         if(fabs(lightness_a - lightness_b) < HUE_EPSILON) return true;
+        _lastWrongColor = a;
         return false;
     }
     else {
         auto hue_a = QColor(a).hueF();
         if(fabs(hue_a - hue_b) < HUE_EPSILON) return true;
+        _lastWrongColor = a;
         return false;
     }
 }
 
 void InteractiveCanvas::fill(QImage& image, int sx, int sy, QRgb replace_color) {
+
+    _lastWrongColor = Qt::transparent;
 
     if (image.pixel(sx, sy) == replace_color) return;
 
