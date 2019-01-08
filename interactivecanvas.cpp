@@ -123,7 +123,6 @@ QString InteractiveCanvas::save()
 {
     auto dir = QDir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
     auto path = dir.absoluteFilePath("touchpaint-picture.jpg");
-   _source.save(path);
 
    // in order to set the background color to white, we create a new, temporary white image and paint the canvas on top of it.
    QImage tmp(_source.size(),QImage::Format_RGB32);
