@@ -16,7 +16,7 @@ Item {
     signal tapped(var myself)
 
     property double lastClick: 0
-    property double delayBeforeNewClick: 1000 //ms
+    property double delayBeforeNewClick: 500 //ms
 
     width: Screen.width/12
     height: width
