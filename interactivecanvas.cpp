@@ -16,6 +16,7 @@ InteractiveCanvas::InteractiveCanvas(QQuickItem *parent) :
     QQuickPaintedItem(parent),
     _mode(DRAW)
 {
+    setRenderTarget(QQuickPaintedItem::FramebufferObject);
     setAcceptedMouseButtons(Qt::AllButtons);
     setAcceptTouchEvents(true);
     //setAcceptHoverEvents(true);
