@@ -55,6 +55,7 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+
         onClicked: {
             var now = new Date().getTime();
             if ((now - lastClick) > delayBeforeNewClick) {

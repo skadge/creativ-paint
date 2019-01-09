@@ -9,9 +9,16 @@
 #include <QAndroidActivityResultReceiver>
 #endif
 
+class ImageIO;
+
 #ifdef Q_OS_ANDROID
 class ImageIOReceiver : public QAndroidActivityResultReceiver {
+public:
+    ImageIOReceiver(ImageIO* parent):_parent(parent) {}
     void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data);
+
+private:
+    ImageIO* _parent;
 };
 #endif
 
@@ -23,15 +30,19 @@ public:
 
     Q_INVOKABLE void shareImage(const QString& path);
 
+    Q_INVOKABLE bool getImage();
+
+    QString capturedImagePath;
+
 private:
 
 #ifdef Q_OS_ANDROID
     ImageIOReceiver imageIOReceiver;
+
 #endif
 
 signals:
-
-public slots:
+    void imageCaptured(QString path);
 };
 
 

@@ -274,8 +274,9 @@ Window {
         z: 5
         onTapped: {
             closeAllDrawers();
-            camera.start();
-            cameraCapture.visible=true;
+            imageio.getImage();
+            //camera.start();
+            //cameraCapture.visible=true;
         }
     }
 
@@ -308,6 +309,13 @@ Window {
 
     ImageIO {
         id: imageio
+
+        onImageCaptured: {
+            console.log("Image received! " + path)
+            picturePlacer.source = "file://" + path;
+            picturePlacer.enabled = true;
+
+        }
     }
 
     GesturePicture {
